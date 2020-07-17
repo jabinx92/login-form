@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import FormUserDetails from './FormUserDetails';
-import FormPersonalDetails from './FormPersonalDetails'
+import FormPersonalDetails from './FormPersonalDetails';
+import Confirm from './Confirm'
+import Success from './Success';
+import axios from '../axios-submit'
 
 class UserForm extends Component {
     constructor(props) {
@@ -37,6 +40,21 @@ class UserForm extends Component {
         this.setState({[input]: event.target.value})
     }
 
+    axiosSubmit = () => { //backend submission to firebase
+        const submit = {
+            // firstName: this.state.firstName,
+            // lastName: this.state.lastName,
+            // email: this.state.email,
+            // occupation: this.state.occupation,
+            // city: this.state.city,
+            // bio: this.state.bio
+            ...this.state
+        }
+        axios.post('/submissions.json', submit)
+            .then(response => console.log(response))
+            .catch(error => console.log(error));
+    }
+
     render () {
         const { step } = this.state
         const { firstName, lastName, email, occupation, city, bio } = this.state
@@ -53,16 +71,24 @@ class UserForm extends Component {
                 )
             case 2:
                 return (
-                    <FormPersonalDetails 
-                    prevStep={this.prevStep}
-                    handleChange={this.handleChange}
-                    values={values}
+                    <FormPersonalDetails
+                        nextStep={this.nextStep}
+                        prevStep={this.prevStep}
+                        handleChange={this.handleChange}
+                        values={values}
                     />
                 )
             case 3:
-                return <h1>Confirm</h1>
+                return (
+                    <Confirm
+                        nextStep={this.nextStep}
+                        prevStep={this.prevStep}
+                        values={values}
+                        onSubmit={this.axiosSubmit}
+                    />
+                )
             case 4:
-                return <h1>Success</h1>
+                return <Success />
         }
     }
 }
